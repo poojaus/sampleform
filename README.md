@@ -5,10 +5,10 @@ Sampleform
 <h4 align="center">A sample employee registration form using JSON </h4>
 
 <p align="center">
-  <a href="#define">define</a> •
-  <a href="#features">features</a> •
-  <a href="#uses">uses</a> •
-  <a href="#why json">why json</a> •
+  <a href="#defnition">define</a> •
+  <a href="#Key Features">features</a> •
+  <a href="#Use-Cases">Use-cases</a> •
+  <a href="#why prefer JsonPowerDB">why json</a> •
 </p>
 
 ## Defnition
