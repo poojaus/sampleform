@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Form Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Employee form</h2>
+            <form id="empForm" method="get">
+                
+                <div class="form-group">
+                    <label for="empName">Employee ID:</label>
+                    <input type="text" class="form-control" id="empId">
+                </div>
+                <div class="form-group">
+                    <label for="empName">Employee Name:</label>
+                    <input type="text" class="form-control" id="empName">
+                </div>
+                <div class="form-group">
+                    <label for="empEmail">Email:</label>
+                    <input type="email" class="form-control" id="empEmail">
+                </div>
+                <div class="form-group">
+                    <label for="empEmail">Basicsalary:</label>
+                    <input type="number" class="form-control" id="empsal">
+                </div>
+                <div class="form-group">
+                    <label for="empEmail">HRA:</label>
+                    <input type="number" class="form-control" id="hra">
+                </div>
+                <div class="form-group">
+                    <label for="empEmail">DA:</label>
+                    <input type="number" class="form-control" id="da">
+                </div>
+                <div class="form-group">
+                    <label for="empEmail">Deduct:</label>
+                    <input type="number" class="form-control" id="deduct">
+                </div>
+                <div class="form-group text center">
+                    <button type="button" class="btn  btn-lg btn-primary" id="Save" onclick="saveData()" disabled>Save</button>
+                    <button type="button" class="btn  btn-lg btn-primary" id="change" onclick="changeData()" disabled>Change</button>
+                    <button type="button" class="btn  btn-lg btn-primary" id="reset" onclick="resetData()" disabled>Reset</button>
+                </div> 
+                
+            </form>
+        </div>
+        <script>
+            $("#empId").focus();
+            function saveRecNo2LS(jsonObj){
+                var lvData=JSON.parse(jsonObj.data);
+                localStorage.setItem("recno",lvdata.rec_no);
+            }
+            function getEmpIdAsJsonObj(){
+                var empId=$("#empId").val();
+                var jsonStr={
+                    id:empid
+                };
+                return JSON.stringify(jsonStr);
+            }
+            function fillData(jsonObj){
+                saveRecNo2LS(jsonObj);
+                var data=JSON.parse(jsonObj.dat).record;
+                $("#empName").val(data.Name);
+                $("#empEmail").val(data.Email);
+                $("#empSal").val(data.Salary);
+                $("#emphra").val(data.hra);
+                $("#empda").val(data.da);
+                $("#empdeduct").val(data.deduct);
+            }
+            
+            function validateAndGetFormData() {
+                var empIdVar = $("#empId").val();
+                if (empIdVar === "") {
+                    alert("Employee ID Required Value");
+                    $("#empId").focus();
+                    return "";
+                }
+                var empNameVar = $("#empName").val();
+                if (empNameVar === "") {
+                    alert("Employee Name is Required Value");
+                    $("#empName").focus();
+                    return "";
+                }
+                var empEmailVar = $("#empEmail").val();
+                if (empEmailVar === "") {
+                    alert("Employee Email is Required Value");
+                    $("#empEmail").focus();
+                    return "";
+                }
+                var jsonStrObj = {
+                    empId: empIdVar,
+                    empName: empNameVar,
+                    empEmail: empEmailVar,
+                };
+                return JSON.stringify(jsonStrObj);
+            }
+            // This method is used to create PUT Json request.
+            function createPUTRequest(connToken, jsonObj, dbName, relName) {
+                var putRequest = "{\n"
+                        + "\"token\" : \""
+                        + connToken
+                        + "\","
+                        + "\"dbName\": \""
+                        + dbName
+                        + "\",\n" + "\"cmd\" : \"PUT\",\n"
+                        + "\"rel\" : \""
+                        + relName + "\","
+                        + "\"jsonStr\": \n"
+                        + jsonObj
+                        + "\n"
+                        + "}";
+                return putRequest;
+            }
+            function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+                var url = dbBaseUrl + apiEndPointUrl;
+                var jsonObj;
+                $.post(url, reqString, function (result) {
+                    jsonObj = JSON.parse(result);
+                }).fail(function (result) {
+                    var dataJsonObj = result.responseText;
+                    jsonObj = JSON.parse(dataJsonObj);
+                });
+                return jsonObj;
+            }
+            function resetForm() {
+                $("#empId").val("");
+                $("#empName").val("");
+                $("#empEmail").val("");
+                $("#empId").focus();
+                $("#hra").val("");
+                $("#da").val("");
+                $("#deduct").val("");
+                $("#empId").prop("disabled",false);
+                $("#save").prop("disabled",true);
+                $("#change").prop("disabled",true);
+                $("#reset").prop("disabled",true);
+                $("#empId").focus();   
+            }
+            function validation(){
+                var empId,empName,empEmail,empSal,hra,da,deduct;
+                empId=$("#empId").val();
+                empName=$("#empNmae").val();
+                empEmail=$("#empEmail").val();
+                empSal=$("#empSal").val();
+                hra=$("#hra").val();
+                da=$("#da").val();
+                deduct=$("#deduct").val();
+                
+                if (empId===''){
+                    alert("Employee ID missing");
+                    $("#empId").focus();
+                    return "";
+                }
+                if (empName===''){
+                    alert("Employee name missing");
+                    $("#empName").focus();
+                    return "";
+                }
+                if (empEmail===''){
+                    alert("Employee email missing");
+                    $("#empEmail").focus();
+                    return "";
+                }
+                if (empSal===''){
+                    alert("Employee salary missing");
+                    $("#empSal").focus();
+                    return "";
+                }
+                if (hra===''){
+                    alert("Employee HRA missing");
+                    $("#hra").focus();
+                    return "";
+                }
+                if (da===''){
+                    alert("Employee DA missing");
+                    $("#da").focus();
+                    return "";
+                }
+                if (deduct===''){
+                    alert("Employee deduct missing");
+                    $("#deduct").focus();
+                    return "";
+                }
+                var jsonStrObj={
+                    Id:empId,
+                    Name:empName,
+                    Salary:empSal,
+                    Email:empEmail,
+                    hra:hra,
+                    da:da,
+                    deduct:deduct
+                };
+                return JSON.stringify(jsonStrObj);
+            }
+            function getEmp(){
+                var empIdJsonObj=getEmpIdAsJsonObj();
+                var getRequest=createGET_BY_KEYRequest(connToken,empDBName,empRelationName,empIdJsonObj);
+                jQuery.ajaxSetup({async:false});
+                var resJsonObj=executeCommandAtGivenBaseUrl(getRequest,jpdbBaseURL,jpdbIRL);
+                jQuery.ajaxSetup({async:false});
+                if (resJsonObj.status===400){
+                    $("#save").prop("disabled",false);
+                    $("#reset").prop("disabled",false);
+                    $("#empName").focus();
+                }else if (resJsonObj.status===200){
+                    $("#empId").prop("disabled",true);
+                    fillData(resJsonObj);
+                    $("#change").prop("disabled",false);
+                    $("#change").prop("disabled",false);
+                    $("#empName").focus();
+                }
+            }
+            function saveData(){
+                var jsonStrObj=validateData();
+                if (jsonStrObj===''){
+                    return  "";
+                }
+                var putRequest=createPUTRequest(connToken,jsonStrObj,empDBName,empRelationName);
+                jQuery.ajaxSetup({async:false});
+                var resJsonObj=executeCommandAtGivenBaseUrl(putRequest,jpdbBaseURL,jpdbIML);
+                jQuery.ajaxSetup({async:true});
+                resetForm();
+                $("#empId").focus();
+            }
+            function changeData(){
+                $("#change").prop("disabled",true);
+                jsonChg=validateData();
+                var updateRequest=createUPDATERecordRequest(connToken,jsonChg,empDBName,empRelationName,localStorage.getItem(""));
+                jQuery.ajaxSetup({async:false});
+                var resJsonObj=executeCommandAtGivenBaseUrl(updateRequest,jpdbBaseURL,jpdbIML);
+                jQuery.ajaxSetup({async:true});
+                console.log(resJsonObj);
+                resetForm();
+                $('#empId').focus();
+            }
+            function saveEmployee() {
+                var jsonStr = validateAndGetFormData();
+                if (jsonStr === "") {
+                    return;
+                }
+                var putReqStr = createPUTRequest("90936861|-31948784479254024|90932362",
+                        jsonStr, "SAMPLE", "EMP-REL");
+                alert(putReqStr);
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommand(putReqStr,
+                        "http://api.login2explore.com:5577", "/api/iml");
+                alert(JSON.stringify(resultObj));
+                jQuery.ajaxSetup({async: true});
+                resetForm();
+            }
+        </script>
+    </body>
+</html>
+
